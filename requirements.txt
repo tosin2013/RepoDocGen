@@ -4,3 +4,4 @@ pymdown-extensions
 mkdocs-git-revision-date-localized-plugin
 mkdocs-versioning
 gradio
+gradio
