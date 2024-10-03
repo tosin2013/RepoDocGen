@@ -1,3 +1,37 @@
+import os
+import subprocess
+from urllib.parse import urlparse
+from utils.git_utils import clone_repository, list_files_in_repository, read_file_contents
+from agents.huggingface_agent import HuggingFaceAgent
+from agents.mistral_agent import MistralAgent
+from agents.ollama_agent import OllamaAgent
+from agents.openai_agent import OpenAIAgent
+from config import config  # Import the global config instance
+import gradio as gr
+
+def is_valid_repo_url(repo_url):
+    """
+    Check if the provided repository URL is valid.
+    
+    :param repo_url: URL of the Git repository.
+    :return: True if valid, False otherwise.
+    """
+    try:
+        result = urlparse(repo_url)
+        return all([result.scheme, result.netloc])
+    except ValueError:
+        return False
+
+def is_valid_code_file(file):
+    """
+    Check if the uploaded file is a valid code file.
+    
+    :param file: Uploaded file object.
+    :return: True if valid, False otherwise.
+    """
+    valid_extensions = ['.py', '.js', '.java', '.cpp', '.c', '.h', '.hpp', '.html', '.css', '.md']
+    return file.name.endswith(tuple(valid_extensions))
+
 def generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files):
     # Clone the repository or use uploaded files
     if repo_url:
@@ -48,8 +82,6 @@ def build_mkdocs(output_dir):
     # Build MkDocs site
     subprocess.run(["mkdocs", "build", "--site-dir", output_dir])
 
-import gradio as gr
-
 def gradio_interface(repo_url, agent_type, uploaded_files):
     local_path = config.LOCAL_PATH
     output_dir = config.OUTPUT_DIR
@@ -88,26 +120,3 @@ if __name__ == "__main__":
     
     # Launch Gradio interface
     iface.launch()
-from config import config  # Import the global config instance
-
-def gradio_interface(repo_url, agent_type, uploaded_files):
-    local_path = config.LOCAL_PATH
-    output_dir = config.OUTPUT_DIR
-    
-    # Validate repository URL
-    if repo_url and not is_valid_repo_url(repo_url):
-        return "Invalid repository URL. Please provide a valid Git repository URL."
-    
-    # Validate uploaded files
-    if uploaded_files:
-        for file in uploaded_files:
-            if not is_valid_code_file(file):
-                return f"Invalid file: {file.name}. Please upload valid code files."
-    
-    # Generate documentation
-    documentation_content = generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files)
-    
-    # Build MkDocs site
-    build_mkdocs(output_dir)
-    
-    return documentation_content
