@@ -51,8 +51,9 @@ def build_mkdocs(output_dir):
 import gradio as gr
 
 def gradio_interface(repo_url, agent_type, uploaded_files):
-    local_path = config.LOCAL_PATH
-    output_dir = config.OUTPUT_DIR
+    config_instance = config.Config()  # Instantiate the config object
+    local_path = config_instance.LOCAL_PATH
+    output_dir = config_instance.OUTPUT_DIR
     
     # Validate repository URL
     if repo_url and not is_valid_repo_url(repo_url):
@@ -167,3 +168,10 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
             documentation_content += md_file.read() + "\n\n"
     
     return documentation_content
+   class Config:
+       LOCAL_PATH = "/path/to/local/repo"
+       OUTPUT_DIR = "/path/to/output/dir"
+       HUGGINGFACE_API_KEY = "your_huggingface_api_key"
+       MISTRAL_API_KEY = "your_mistral_api_key"
+       OLLAMA_API_KEY = "your_ollama_api_key"
+       OPENAI_API_KEY = "your_openai_api_key"
