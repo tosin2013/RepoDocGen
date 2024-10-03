@@ -51,9 +51,8 @@ def build_mkdocs(output_dir):
 import gradio as gr
 
 def gradio_interface(repo_url, agent_type, uploaded_files):
-    config_instance = config.Config()  # Instantiate the config object
-    local_path = config_instance.LOCAL_PATH
-    output_dir = config_instance.OUTPUT_DIR
+    local_path = config.LOCAL_PATH
+    output_dir = config.OUTPUT_DIR
     
     # Validate repository URL
     if repo_url and not is_valid_repo_url(repo_url):
