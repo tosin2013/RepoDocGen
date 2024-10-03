@@ -28,3 +28,6 @@ def list_files_in_repository(local_path):
             file_list.append(os.path.join(root, file))
     
     return file_list
+def read_file_contents(file_path):
+    with open(file_path, 'r') as file:
+        return file.read()

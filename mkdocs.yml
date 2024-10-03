@@ -1,5 +1,9 @@
 nav:
   - Home: index.md
+  - Documentation:
+    - file1.md
+    - file2.md
+    - ...
   - Introduction: introduction.md
   - Getting Started: getting_started.md
   - API Reference:
