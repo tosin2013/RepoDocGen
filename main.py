@@ -1,9 +1,10 @@
-def generate_documentation(repo_url, local_path, output_dir, agent_type):
-    # Clone the repository
-    clone_repository(repo_url, local_path)
-    
-    # List all files in the repository
-    files = list_files_in_repository(local_path)
+def generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files):
+    # Clone the repository or use uploaded files
+    if repo_url:
+        clone_repository(repo_url, local_path)
+        files = list_files_in_repository(local_path)
+    else:
+        files = uploaded_files
     
     # Initialize AI agent based on user input
     if agent_type == "huggingface":
@@ -19,15 +20,18 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type):
     
     # Iterate over each file
     for file in files:
-        file_path = os.path.join(local_path, file)
-        code = read_file_contents(file_path)
+        if repo_url:
+            file_path = os.path.join(local_path, file)
+            code = read_file_contents(file_path)
+        else:
+            code = file.read().decode('utf-8')
         
         # Generate comments and documentation
         comments = agent.generate_comment(code)
         documentation = agent.generate_documentation(code)
         
         # Save the generated documentation in Markdown format
-        output_file = os.path.join(output_dir, f"{file}.md")
+        output_file = os.path.join(output_dir, f"{file.name}.md")
         with open(output_file, 'w') as md_file:
             md_file.write(f"# {file}\n\n")
             md_file.write(f"## Comments\n{comments}\n\n")
@@ -37,18 +41,36 @@ def build_mkdocs(output_dir):
     # Build MkDocs site
     subprocess.run(["mkdocs", "build", "--site-dir", output_dir])
 
-if __name__ == "__main__":
-    # User input
-    repo_url = input("Enter the repository URL: ")
-    local_path = input("Enter the local path to clone the repository: ")
-    output_dir = input("Enter the output directory for documentation: ")
-    agent_type = input("Select the AI agent (huggingface, mistral, ollama, openai): ")
+import gradio as gr
+
+def gradio_interface(repo_url, agent_type, uploaded_files):
+    local_path = "./cloned_repo"
+    output_dir = "./docs"
     
     # Generate documentation
-    generate_documentation(repo_url, local_path, output_dir, agent_type)
+    generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files)
     
     # Build MkDocs site
     build_mkdocs(output_dir)
+    
+    return "Documentation generated and MkDocs site built successfully!"
+
+if __name__ == "__main__":
+    # Define Gradio interface
+    iface = gr.Interface(
+        fn=gradio_interface,
+        inputs=[
+            gr.inputs.Textbox(label="Git Repository URL"),
+            gr.inputs.Dropdown(choices=["huggingface", "mistral", "ollama", "openai"], label="Select AI Agent"),
+            gr.inputs.File(file_count="multiple", label="Upload Code Files")
+        ],
+        outputs=gr.outputs.Textbox(label="Output Message"),
+        title="Documentation Generator",
+        description="Generate documentation for your code using AI agents."
+    )
+    
+    # Launch Gradio interface
+    iface.launch()
 import os
 import subprocess
 from utils.git_utils import clone_repository, list_files_in_repository, read_file_contents
