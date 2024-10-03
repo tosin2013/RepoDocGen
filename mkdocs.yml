@@ -1,0 +1,48 @@
+nav:
+  - Home: index.md
+  - Introduction: introduction.md
+  - Getting Started: getting_started.md
+  - API Reference:
+    - Agents: api_reference/agents.md
+    - Utilities: api_reference/utilities.md
+  - Tutorials:
+    - Tutorial 1: tutorials/tutorial_1.md
+    - Tutorial 2: tutorials/tutorial_2.md
+  - FAQ: faq.md
+
+theme:
+  name: 'material'
+  palette:
+    primary: 'blue'
+    accent: 'light blue'
+  logo: 'assets/logo.png'
+  favicon: 'assets/favicon.ico'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+
+plugins:
+  - search
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.arithmatex
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.striphtml
+  - pymdownx.tasklist
+  - pymdownx.tilde
+  - pymdownx.emoji
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.progressbar
+  - pymdownx.tabbed
+  - pymdownx.extrarawhtml
+  - pymdownx.escapeall
+  - mkdocs-git-revision-date-localized-plugin
+  - mkdocs-versioning
