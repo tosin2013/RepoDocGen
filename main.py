@@ -47,6 +47,16 @@ def gradio_interface(repo_url, agent_type, uploaded_files):
     local_path = "./cloned_repo"
     output_dir = "./docs"
     
+    # Validate repository URL
+    if repo_url and not is_valid_repo_url(repo_url):
+        return "Invalid repository URL. Please provide a valid Git repository URL."
+    
+    # Validate uploaded files
+    if uploaded_files:
+        for file in uploaded_files:
+            if not is_valid_code_file(file):
+                return f"Invalid file: {file.name}. Please upload valid code files."
+    
     # Generate documentation
     generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files)
     
