@@ -19,6 +19,7 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
         raise ValueError("Invalid agent type selected.")
     
     # Iterate over each file
+    documentation_content = ""
     for file in files:
         if repo_url:
             file_path = os.path.join(local_path, file)
@@ -36,6 +37,12 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
             md_file.write(f"# {file}\n\n")
             md_file.write(f"## Comments\n{comments}\n\n")
             md_file.write(f"## Documentation\n{documentation}\n")
+        
+        # Append the generated documentation to the content
+        with open(output_file, 'r') as md_file:
+            documentation_content += md_file.read() + "\n\n"
+    
+    return documentation_content
 
 def build_mkdocs(output_dir):
     # Build MkDocs site
