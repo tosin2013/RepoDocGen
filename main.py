@@ -83,11 +83,36 @@ if __name__ == "__main__":
     iface.launch()
 import os
 import subprocess
+import gradio as gr
+from urllib.parse import urlparse
 from utils.git_utils import clone_repository, list_files_in_repository, read_file_contents
 from agents.huggingface_agent import HuggingFaceAgent
 from agents.mistral_agent import MistralAgent
 from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
+
+def is_valid_repo_url(repo_url):
+    """
+    Check if the provided repository URL is valid.
+    
+    :param repo_url: URL of the Git repository.
+    :return: True if valid, False otherwise.
+    """
+    try:
+        result = urlparse(repo_url)
+        return all([result.scheme, result.netloc])
+    except ValueError:
+        return False
+
+def is_valid_code_file(file):
+    """
+    Check if the uploaded file is a valid code file.
+    
+    :param file: Uploaded file object.
+    :return: True if valid, False otherwise.
+    """
+    valid_extensions = ['.py', '.js', '.java', '.cpp', '.c', '.h', '.hpp', '.html', '.css', '.md']
+    return file.name.endswith(tuple(valid_extensions))
 
 def generate_documentation(repo_url, local_path, output_dir, agent_type):
     # Clone the repository
