@@ -90,7 +90,6 @@ if __name__ == "__main__":
     iface.launch()
 import os
 import subprocess
-import gradio as gr
 from urllib.parse import urlparse
 from utils.git_utils import clone_repository, list_files_in_repository, read_file_contents
 from agents.huggingface_agent import HuggingFaceAgent
@@ -98,6 +97,7 @@ from agents.mistral_agent import MistralAgent
 from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
 from config import config
+import gradio as gr
 
 def is_valid_repo_url(repo_url):
     """
