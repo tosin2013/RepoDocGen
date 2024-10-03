@@ -8,13 +8,13 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
     
     # Initialize AI agent based on user input
     if agent_type == "huggingface":
-        agent = HuggingFaceAgent(api_key="your_huggingface_api_key")
+        agent = HuggingFaceAgent(api_key=config.HUGGINGFACE_API_KEY)
     elif agent_type == "mistral":
-        agent = MistralAgent(api_key="your_mistral_api_key")
+        agent = MistralAgent(api_key=config.MISTRAL_API_KEY)
     elif agent_type == "ollama":
-        agent = OllamaAgent(api_key="your_ollama_api_key")
+        agent = OllamaAgent(api_key=config.OLLAMA_API_KEY)
     elif agent_type == "openai":
-        agent = OpenAIAgent(api_key="your_openai_api_key")
+        agent = OpenAIAgent(api_key=config.OPENAI_API_KEY)
     else:
         raise ValueError("Invalid agent type selected.")
     
@@ -51,8 +51,8 @@ def build_mkdocs(output_dir):
 import gradio as gr
 
 def gradio_interface(repo_url, agent_type, uploaded_files):
-    local_path = "./cloned_repo"
-    output_dir = "./docs"
+    local_path = config.LOCAL_PATH
+    output_dir = config.OUTPUT_DIR
     
     # Validate repository URL
     if repo_url and not is_valid_repo_url(repo_url):
@@ -97,6 +97,7 @@ from agents.huggingface_agent import HuggingFaceAgent
 from agents.mistral_agent import MistralAgent
 from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
+from config import config
 
 def is_valid_repo_url(repo_url):
     """
