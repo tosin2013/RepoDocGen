@@ -77,11 +77,11 @@ if __name__ == "__main__":
     iface = gr.Interface(
         fn=gradio_interface,
         inputs=[
-            gr.inputs.Textbox(label="Git Repository URL"),
-            gr.inputs.Dropdown(choices=["huggingface", "mistral", "ollama", "openai"], label="Select AI Agent"),
-            gr.inputs.File(file_count="multiple", label="Upload Code Files")
+            gr.Textbox(label="Git Repository URL"),
+            gr.Dropdown(choices=["huggingface", "mistral", "ollama", "openai"], label="Select AI Agent"),
+            gr.File(file_count="multiple", label="Upload Code Files")
         ],
-        outputs=gr.outputs.Markdown(label="Generated Documentation"),
+        outputs=gr.Markdown(label="Generated Documentation"),
         title="Documentation Generator",
         description="Generate documentation for your code using AI agents."
     )
