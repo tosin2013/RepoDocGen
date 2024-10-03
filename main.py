@@ -156,9 +156,9 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
         documentation = agent.generate_documentation(code)
         
         # Save the generated documentation in Markdown format
-        output_file = os.path.join(output_dir, f"{file.name}.md")
+        output_file = os.path.join(output_dir, f"{os.path.basename(file)}.md")
         with open(output_file, 'w') as md_file:
-            md_file.write(f"# {file.name}\n\n")
+            md_file.write(f"# {os.path.basename(file)}\n\n")
             md_file.write(f"## Comments\n{comments}\n\n")
             md_file.write(f"## Documentation\n{documentation}\n")
         
