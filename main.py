@@ -122,37 +122,48 @@ def is_valid_code_file(file):
     valid_extensions = ['.py', '.js', '.java', '.cpp', '.c', '.h', '.hpp', '.html', '.css', '.md']
     return file.name.endswith(tuple(valid_extensions))
 
-def generate_documentation(repo_url, local_path, output_dir, agent_type):
-    # Clone the repository
-    clone_repository(repo_url, local_path)
-    
-    # List all files in the repository
-    files = list_files_in_repository(local_path)
+def generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files):
+    # Clone the repository or use uploaded files
+    if repo_url:
+        clone_repository(repo_url, local_path)
+        files = list_files_in_repository(local_path)
+    else:
+        files = uploaded_files
     
     # Initialize AI agent based on user input
     if agent_type == "huggingface":
-        agent = HuggingFaceAgent(api_key="your_huggingface_api_key")
+        agent = HuggingFaceAgent(api_key=config.HUGGINGFACE_API_KEY)
     elif agent_type == "mistral":
-        agent = MistralAgent(api_key="your_mistral_api_key")
+        agent = MistralAgent(api_key=config.MISTRAL_API_KEY)
     elif agent_type == "ollama":
-        agent = OllamaAgent(api_key="your_ollama_api_key")
+        agent = OllamaAgent(api_key=config.OLLAMA_API_KEY)
     elif agent_type == "openai":
-        agent = OpenAIAgent(api_key="your_openai_api_key")
+        agent = OpenAIAgent(api_key=config.OPENAI_API_KEY)
     else:
         raise ValueError("Invalid agent type selected.")
     
     # Iterate over each file
+    documentation_content = ""
     for file in files:
-        file_path = os.path.join(local_path, file)
-        code = read_file_contents(file_path)
+        if repo_url:
+            file_path = os.path.join(local_path, file)
+            code = read_file_contents(file_path)
+        else:
+            code = file.read().decode('utf-8')
         
         # Generate comments and documentation
         comments = agent.generate_comment(code)
         documentation = agent.generate_documentation(code)
         
         # Save the generated documentation in Markdown format
-        output_file = os.path.join(output_dir, f"{file}.md")
+        output_file = os.path.join(output_dir, f"{file.name}.md")
         with open(output_file, 'w') as md_file:
-            md_file.write(f"# {file}\n\n")
+            md_file.write(f"# {file.name}\n\n")
             md_file.write(f"## Comments\n{comments}\n\n")
             md_file.write(f"## Documentation\n{documentation}\n")
+        
+        # Append the generated documentation to the content
+        with open(output_file, 'r') as md_file:
+            documentation_content += md_file.read() + "\n\n"
+    
+    return documentation_content
