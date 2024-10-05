@@ -36,7 +36,9 @@ def is_valid_code_file(file):
     valid_extensions = ['.py', '.js', '.java', '.cpp', '.c', '.h', '.hpp', '.html', '.css', '.md']
     return file.name.endswith(tuple(valid_extensions))
 
-def generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files):
+def generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files, custom_output_dir=None):
+    # Use custom_output_dir if provided, otherwise use the default output_dir from config
+    output_dir = custom_output_dir if custom_output_dir else output_dir
     # Clone the repository or use uploaded files
     if repo_url:
         clone_repository(repo_url, local_path)
@@ -86,7 +88,7 @@ def build_mkdocs(output_dir):
     # Build MkDocs site in the background
     subprocess.Popen(["mkdocs", "build", "--site-dir", output_dir, "--watch"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-def gradio_interface(repo_url, agent_type, uploaded_files):
+def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=None):
     local_path = config.LOCAL_PATH
     output_dir = config.OUTPUT_DIR
     
@@ -101,7 +103,7 @@ def gradio_interface(repo_url, agent_type, uploaded_files):
                 return f"Invalid file: {file.name}. Please upload valid code files."
     
     # Generate documentation
-    documentation_content = generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files)
+    documentation_content = generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files, custom_output_dir)
     
     # Build MkDocs site
     build_mkdocs(output_dir)
@@ -118,7 +120,8 @@ if __name__ == "__main__":
         inputs=[
             gr.Textbox(label="Git Repository URL"),
             gr.Dropdown(choices=["huggingface", "mistral", "ollama", "openai"], label="Select AI Agent"),
-            gr.File(file_count="multiple", label="Upload Code Files")
+            gr.File(file_count="multiple", label="Upload Code Files"),
+            gr.Textbox(label="Custom Output Directory (optional)")
         ],
         outputs=gr.Markdown(label="Generated Documentation"),
         title="Documentation Generator",
