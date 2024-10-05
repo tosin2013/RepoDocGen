@@ -106,7 +106,7 @@ def gradio_interface(repo_url, agent_type, uploaded_files):
 
 if __name__ == "__main__":
     # Define Gradio interface
-    iface = gradio.Interface(
+    iface = gr.Interface(
         fn=gradio_interface,
         inputs=[
             gr.Textbox(label="Git Repository URL"),
@@ -119,4 +119,4 @@ if __name__ == "__main__":
     )
     
     # Launch Gradio interface
-    gradio.launch()
+    gr.launch()
