@@ -1,5 +1,6 @@
 import os
 import subprocess
+import threading
 from urllib.parse import urlparse
 from utils.git_utils import clone_repository, list_files_in_repository, read_file_contents
 from agents.huggingface_agent import HuggingFaceAgent
@@ -79,8 +80,8 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
     return documentation_content
 
 def build_mkdocs(output_dir):
-    # Build MkDocs site
-    subprocess.run(["mkdocs", "build", "--site-dir", output_dir])
+    # Build MkDocs site in the background
+    subprocess.Popen(["mkdocs", "build", "--site-dir", output_dir, "--watch"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def gradio_interface(repo_url, agent_type, uploaded_files):
     local_path = config.LOCAL_PATH
