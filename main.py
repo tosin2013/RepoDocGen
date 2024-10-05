@@ -103,6 +103,9 @@ def gradio_interface(repo_url, agent_type, uploaded_files):
     # Build MkDocs site
     build_mkdocs(output_dir)
     
+    # Reload Gradio interface
+    iface.reload()
+    
     return documentation_content
 
 if __name__ == "__main__":
