@@ -122,5 +122,8 @@ if __name__ == "__main__":
         description="Generate documentation for your code using AI agents."
     )
     
+    # Run MkDocs in the background
+    threading.Thread(target=build_mkdocs, args=(config.OUTPUT_DIR,)).start()
+    
     # Launch Gradio interface
-    iface.launch()  # Correct method to launch the Gradio interface
+    iface.launch()
