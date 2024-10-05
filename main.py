@@ -1,6 +1,8 @@
 import os
 import subprocess
 import threading
+import logging
+import argparse
 from urllib.parse import urlparse
 from utils.git_utils import clone_repository, list_files_in_repository, read_file_contents
 from agents.huggingface_agent import HuggingFaceAgent
@@ -9,6 +11,17 @@ from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
 from config import config  # Import the global config instance directly from config.py
 import gradio as gr  # Ensure this import is correct
+
+# Configure logging
+def setup_logging(log_level):
+    logging.basicConfig(
+        level=log_level,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[
+            logging.FileHandler("app.log"),
+            logging.StreamHandler()
+        ]
+    )
 
 
 
@@ -39,6 +52,8 @@ def is_valid_code_file(file):
 def generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files, custom_output_dir=None):
     # Use custom_output_dir if provided, otherwise use the default output_dir from config
     output_dir = custom_output_dir if custom_output_dir else output_dir
+    logging.info(f"Generating documentation for repo_url: {repo_url}, local_path: {local_path}, output_dir: {output_dir}, agent_type: {agent_type}")
+    
     # Clone the repository or use uploaded files
     if repo_url:
         clone_repository(repo_url, local_path)
@@ -86,6 +101,7 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
 
 def build_mkdocs(output_dir):
     # Build MkDocs site in the background
+    logging.info(f"Building MkDocs site in directory: {output_dir}")
     subprocess.Popen(["mkdocs", "build", "--site-dir", output_dir, "--watch"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=None):
@@ -114,6 +130,14 @@ def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=Non
     return documentation_content
 
 if __name__ == "__main__":
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Documentation Generator")
+    parser.add_argument("--log-level", default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Set the logging level")
+    args = parser.parse_args()
+    
+    # Setup logging
+    setup_logging(args.log_level)
+    
     # Define Gradio interface
     iface = gr.Interface(
         fn=gradio_interface,
