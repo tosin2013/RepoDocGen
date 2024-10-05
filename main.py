@@ -6,7 +6,7 @@ from agents.huggingface_agent import HuggingFaceAgent
 from agents.mistral_agent import MistralAgent
 from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
-from config import config  # Import the global config instance
+import config  # Import the global config instance
 import gradio as gr  # Ensure this import is correct
 
 def is_valid_repo_url(repo_url):
