@@ -3,4 +3,4 @@ mkdocs-material
 pymdown-extensions
 mkdocs-git-revision-date-localized-plugin
 mkdocs-versioning
-gradio>=3.0.0
+gradio>=4.4.1
