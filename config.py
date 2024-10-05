@@ -22,3 +22,4 @@ class Config:
 config = Config()
 config = Config()
 config = Config()
+config = Config()
