@@ -7,7 +7,7 @@ from agents.mistral_agent import MistralAgent
 from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
 import config  # Import the global config instance
-import gradio as gr
+import gradio
 
 def is_valid_repo_url(repo_url):
     """
@@ -106,7 +106,7 @@ def gradio_interface(repo_url, agent_type, uploaded_files):
 
 if __name__ == "__main__":
     # Define Gradio interface
-    iface = gr.Interface(
+    iface = gradio.Interface(
         fn=gradio_interface,
         inputs=[
             gr.Textbox(label="Git Repository URL"),
@@ -119,4 +119,4 @@ if __name__ == "__main__":
     )
     
     # Launch Gradio interface
-    iface.launch()
+    gradio.launch()
