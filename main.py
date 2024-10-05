@@ -119,4 +119,4 @@ if __name__ == "__main__":
     )
     
     # Launch Gradio interface
-    gr.launch()
+    iface.launch()
