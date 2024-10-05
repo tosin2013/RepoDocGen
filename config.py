@@ -20,3 +20,4 @@ class Config:
 
 # Create a global config instance
 config = Config()
+config = Config()
