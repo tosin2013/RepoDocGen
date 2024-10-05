@@ -7,7 +7,7 @@ from agents.mistral_agent import MistralAgent
 from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
 import config  # Import the global config instance
-import gradio
+import gradio as gr
 
 def is_valid_repo_url(repo_url):
     """
