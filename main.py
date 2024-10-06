@@ -23,9 +23,6 @@ def setup_logging(log_level):
         ]
     )
 
-
-
-
 def is_valid_repo_url(repo_url):
     """
     Check if the provided repository URL is valid.
