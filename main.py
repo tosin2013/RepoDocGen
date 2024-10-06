@@ -126,8 +126,10 @@ def generate_documentation(repo_url, paths, agent_type, uploaded_files, custom_o
     """
     output_dir = custom_output_dir if custom_output_dir else paths['output_dir']
     logging.info(
-        "Generating documentation for repo_url: %s, local_path: %s, output_dir: %s, agent_type: %s",
-        repo_url, paths['local_path'], output_dir, agent_type
+        f"Generating documentation for repo_url: {repo_url}, "
+        f"local_path: {paths['local_path']}, "
+        f"output_dir: {output_dir}, "
+        f"agent_type: {agent_type}"
     )
 
     if repo_url:
@@ -164,7 +166,7 @@ def build_mkdocs(output_dir):
 
     :param output_dir: Directory to build the MkDocs site.
     """
-    logging.info("Building MkDocs site in directory: %s", output_dir)
+    logging.info(f"Building MkDocs site in directory: {output_dir}")
     with subprocess.Popen(
         ["mkdocs", "build", "--site-dir", output_dir, "--watch"],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
