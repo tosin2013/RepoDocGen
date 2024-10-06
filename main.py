@@ -14,7 +14,7 @@ from agents.huggingface_agent import HuggingFaceAgent
 from agents.mistral_agent import MistralAgent
 from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
-from config import config  # Import the global config instance directly from config.py
+import config  # Import the global config instance directly from config.py
 
 # Configure logging
 def setup_logging(log_level):
@@ -100,21 +100,29 @@ def save_documentation(output_dir, file_name, comments, documentation):
         md_file.write(f"## Documentation\n{documentation}\n")
 
 def generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files, custom_output_dir=None):
-    # Use custom_output_dir if provided, otherwise use the default output_dir from config
+    """
+    Generate documentation for the provided repository or uploaded files.
+
+    :param repo_url: URL of the Git repository.
+    :param local_path: Local path to clone the repository.
+    :param output_dir: Directory to save the generated documentation.
+    :param agent_type: Type of AI agent to use.
+    :param uploaded_files: List of uploaded files.
+    :param custom_output_dir: Custom output directory (optional).
+    :return: Generated documentation content.
+    """
     output_dir = custom_output_dir if custom_output_dir else output_dir
-    logging.info("Generating documentation for repo_url: %s, local_path: %s, output_dir: %s, agent_type: %s", repo_url, local_path, output_dir, agent_type)
+    logging.info("Generating documentation for repo_url: %s, local_path: %s, output_dir: %s, agent_type: %s", 
+                 repo_url, local_path, output_dir, agent_type)
     
-    # Clone the repository or use uploaded files
     if repo_url:
         clone_repository(repo_url, local_path)
         files = list_files_in_repository(local_path)
     else:
         files = uploaded_files
     
-    # Initialize AI agent based on user input
     agent = initialize_agent(agent_type)
     
-    # Iterate over each file
     documentation_content = ""
     for file in files:
         if repo_url:
@@ -123,45 +131,52 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
         else:
             code = file.read().decode('utf-8')
         
-        # Generate comments and documentation
         comments, documentation = generate_comments_and_documentation(agent, code)
         
-        # Save the generated documentation in Markdown format
         save_documentation(output_dir, os.path.basename(file), comments, documentation)
         
-        # Append the generated documentation to the content
         with open(os.path.join(output_dir, f"{os.path.basename(file)}.md"), 'r', encoding='utf-8') as md_file:
             documentation_content += md_file.read() + "\n\n"
     
     return documentation_content
 
 def build_mkdocs(output_dir):
-    # Build MkDocs site in the background
+    """
+    Build the MkDocs site in the background.
+
+    :param output_dir: Directory to build the MkDocs site.
+    """
     logging.info("Building MkDocs site in directory: %s", output_dir)
-    with subprocess.Popen(["mkdocs", "build", "--site-dir", output_dir, "--watch"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+    with subprocess.Popen(["mkdocs", "build", "--site-dir", output_dir, "--watch"], 
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
         pass
 
 def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=None):
+    """
+    Interface for generating documentation using Gradio.
+
+    :param repo_url: URL of the Git repository.
+    :param agent_type: Type of AI agent to use.
+    :param uploaded_files: List of uploaded files.
+    :param custom_output_dir: Custom output directory (optional).
+    :return: Generated documentation content.
+    """
     local_path = config.LOCAL_PATH
     output_dir = config.OUTPUT_DIR
     
-    # Validate repository URL
     if repo_url and not is_valid_repo_url(repo_url):
         return "Invalid repository URL. Please provide a valid Git repository URL."
     
-    # Validate uploaded files
     if uploaded_files:
         for file in uploaded_files:
             if not is_valid_code_file(file):
                 return f"Invalid file: {file.name}. Please upload valid code files."
     
-    # Generate documentation
     documentation_content = generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files, custom_output_dir)
     
-    # Build MkDocs site
     build_mkdocs(output_dir)
     
-    # Reload Gradio interface
+    global iface
     if iface is not None:
         iface.reload()
     
