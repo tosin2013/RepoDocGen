@@ -21,17 +21,20 @@ class Config:
 
     @classmethod
     def validate_api_keys(cls):
-        """Validate that API keys are not default values."""
+        """Validate that the API key for the default agent type is not a default value."""
         default_keys = {
-            "HUGGINGFACE_API_KEY": "your_valid_huggingface_api_key",
-            "MISTRAL_API_KEY": "your_mistral_api_key",
-            "OLLAMA_API_KEY": "your_ollama_api_key",
-            "OPENAI_API_KEY": "your_openai_api_key"
+            "huggingface": "your_valid_huggingface_api_key",
+            "mistral": "your_mistral_api_key",
+            "ollama": "your_ollama_api_key",
+            "openai": "your_openai_api_key"
         }
-        for key, value in default_keys.items():
-            if getattr(cls, key) == value:
-                print(f"Error: {key} is set to the default value. Please update your .env file.")
-                sys.exit(1)
+        default_value = default_keys.get(cls.DEFAULT_AGENT_TYPE)
+        api_key_name = f"{cls.DEFAULT_AGENT_TYPE.upper()}_API_KEY"
+        api_key_value = getattr(cls, api_key_name)
+
+        if api_key_value == default_value:
+            print(f"Error: {api_key_name} is set to the default value. Please update your .env file.")
+            sys.exit(1)
 
 # Create a global config instance
 config = Config()
