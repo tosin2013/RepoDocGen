@@ -1,19 +1,28 @@
+"""
+Main module for the Documentation Generator application.
+"""
+
 import os
 import subprocess
 import threading
 import logging
 import argparse
 from urllib.parse import urlparse
+import gradio as gr  # Ensure this import is correct
 from utils.git_utils import clone_repository, list_files_in_repository, read_file_contents
 from agents.huggingface_agent import HuggingFaceAgent
 from agents.mistral_agent import MistralAgent
 from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
 from config import config  # Import the global config instance directly from config.py
-import gradio as gr  # Ensure this import is correct
 
 # Configure logging
 def setup_logging(log_level):
+    """
+    Configure logging for the application.
+    
+    :param log_level: Logging level to set.
+    """
     logging.basicConfig(
         level=log_level,
         format="%(asctime)s - %(levelname)s - %(message)s",
@@ -55,14 +64,13 @@ def initialize_agent(agent_type):
     """
     if agent_type == "huggingface":
         return HuggingFaceAgent(api_key=config.HUGGINGFACE_API_KEY)
-    elif agent_type == "mistral":
+    if agent_type == "mistral":
         return MistralAgent(api_key=config.MISTRAL_API_KEY)
-    elif agent_type == "ollama":
+    if agent_type == "ollama":
         return OllamaAgent(api_key=config.OLLAMA_API_KEY)
-    elif agent_type == "openai":
+    if agent_type == "openai":
         return OpenAIAgent(api_key=config.OPENAI_API_KEY)
-    else:
-        raise ValueError("Invalid agent type selected.")
+    raise ValueError("Invalid agent type selected.")
 
 def generate_comments_and_documentation(agent, code):
     """
@@ -86,7 +94,7 @@ def save_documentation(output_dir, file_name, comments, documentation):
     :param documentation: Generated documentation.
     """
     output_file = os.path.join(output_dir, f"{file_name}.md")
-    with open(output_file, 'w') as md_file:
+    with open(output_file, 'w', encoding='utf-8') as md_file:
         md_file.write(f"# {file_name}\n\n")
         md_file.write(f"## Comments\n{comments}\n\n")
         md_file.write(f"## Documentation\n{documentation}\n")
@@ -94,7 +102,7 @@ def save_documentation(output_dir, file_name, comments, documentation):
 def generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files, custom_output_dir=None):
     # Use custom_output_dir if provided, otherwise use the default output_dir from config
     output_dir = custom_output_dir if custom_output_dir else output_dir
-    logging.info(f"Generating documentation for repo_url: {repo_url}, local_path: {local_path}, output_dir: {output_dir}, agent_type: {agent_type}")
+    logging.info("Generating documentation for repo_url: %s, local_path: %s, output_dir: %s, agent_type: %s", repo_url, local_path, output_dir, agent_type)
     
     # Clone the repository or use uploaded files
     if repo_url:
@@ -122,15 +130,16 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
         save_documentation(output_dir, os.path.basename(file), comments, documentation)
         
         # Append the generated documentation to the content
-        with open(os.path.join(output_dir, f"{os.path.basename(file)}.md"), 'r') as md_file:
+        with open(os.path.join(output_dir, f"{os.path.basename(file)}.md"), 'r', encoding='utf-8') as md_file:
             documentation_content += md_file.read() + "\n\n"
     
     return documentation_content
 
 def build_mkdocs(output_dir):
     # Build MkDocs site in the background
-    logging.info(f"Building MkDocs site in directory: {output_dir}")
-    subprocess.Popen(["mkdocs", "build", "--site-dir", output_dir, "--watch"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logging.info("Building MkDocs site in directory: %s", output_dir)
+    with subprocess.Popen(["mkdocs", "build", "--site-dir", output_dir, "--watch"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+        pass
 
 def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=None):
     local_path = config.LOCAL_PATH
@@ -153,7 +162,8 @@ def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=Non
     build_mkdocs(output_dir)
     
     # Reload Gradio interface
-    iface.reload()
+    if iface is not None:
+        iface.reload()
     
     return documentation_content
 
