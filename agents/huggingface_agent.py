@@ -9,6 +9,10 @@ class HuggingFaceAgent:
         if not self.api_key:
             logging.error("HUGGINGFACE_API_KEY is missing or invalid.")
             raise ValueError("Invalid API key")
+        logging.info("HUGGINGFACE_API_KEY is valid.")
+        if not self.api_key:
+            logging.error("HUGGINGFACE_API_KEY is missing or invalid.")
+            raise ValueError("Invalid API key")
         logging.info("API key validation successful.")
 
     def generate_comment(self, code):
