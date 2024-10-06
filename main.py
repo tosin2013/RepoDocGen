@@ -23,7 +23,6 @@ def is_valid_repo_url(repo_url):
     :return: True if valid, False otherwise.
     """
     # Existing code for validating repo URL
-    pass
 
 def is_valid_code_file(file):
     """
