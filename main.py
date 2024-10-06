@@ -191,6 +191,10 @@ def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=Non
             if not is_valid_code_file(file):
                 return f"Invalid file: {file.name}. Please upload valid code files."
 
+    # Check if the API key is valid before proceeding
+    if agent_type == "huggingface" and not config.HUGGINGFACE_API_KEY:
+        return "Invalid Hugging Face API key. Please update your .env file."
+
     documentation_content = generate_documentation(
         repo_url, {'local_path': local_path, 'output_dir': output_dir}, agent_type, uploaded_files, custom_output_dir
     )

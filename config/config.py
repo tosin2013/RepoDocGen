@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -33,8 +34,10 @@ class Config:
         api_key_value = getattr(cls, api_key_name)
 
         if api_key_value == default_value:
-            print(f"Error: {api_key_name} is set to the default value. Please update your .env file.")
+            logging.error(f"Error: {api_key_name} is set to the default value. Please update your .env file.")
             sys.exit(1)
+        else:
+            logging.info(f"{api_key_name} is set to: {api_key_value}")
 
 # Create a global config instance
 config = Config()
