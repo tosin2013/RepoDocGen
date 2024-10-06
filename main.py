@@ -126,7 +126,11 @@ def generate_documentation(repo_url, paths, agent_type, uploaded_files, custom_o
     for file in files:
         if repo_url:
             file_path = os.path.join(paths['local_path'], file)
-            code = read_file_contents(file_path)
+            try:
+                code = read_file_contents(file_path)
+            except FileNotFoundError as e:
+                logging.error(f"Error reading file: {e}")
+                continue
         else:
             code = file.read().decode('utf-8')
 
