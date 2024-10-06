@@ -2,25 +2,27 @@
 Main module for the Documentation Generator application.
 """
 
+import argparse
+import logging
 import os
 import subprocess
 import threading
-import logging
-import argparse
 from urllib.parse import urlparse
+
 import gradio as gr  # Ensure this import is correct
-from utils.git_utils import clone_repository, list_files_in_repository, read_file_contents
+
 from agents.huggingface_agent import HuggingFaceAgent
 from agents.mistral_agent import MistralAgent
 from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
+from utils.git_utils import clone_repository, list_files_in_repository, read_file_contents
+
 import config  # Import the global config instance directly from config.py
 
 # Configure logging
 def setup_logging(log_level):
-    """
-    Configure logging for the application.
-    
+    """Configure logging for the application.
+
     :param log_level: Logging level to set.
     """
     logging.basicConfig(
@@ -33,9 +35,8 @@ def setup_logging(log_level):
     )
 
 def is_valid_repo_url(repo_url):
-    """
-    Check if the provided repository URL is valid.
-    
+    """Check if the provided repository URL is valid.
+
     :param repo_url: URL of the Git repository.
     :return: True if valid, False otherwise.
     """
@@ -46,9 +47,8 @@ def is_valid_repo_url(repo_url):
         return False
 
 def is_valid_code_file(file):
-    """
-    Check if the uploaded file is a valid code file.
-    
+    """Check if the uploaded file is a valid code file.
+
     :param file: Uploaded file object.
     :return: True if valid, False otherwise.
     """
@@ -56,9 +56,8 @@ def is_valid_code_file(file):
     return file.name.endswith(tuple(valid_extensions))
 
 def initialize_agent(agent_type):
-    """
-    Initialize the AI agent based on the user input.
-    
+    """Initialize the AI agent based on the user input.
+
     :param agent_type: Type of AI agent to initialize.
     :return: Initialized AI agent.
     """
@@ -73,9 +72,8 @@ def initialize_agent(agent_type):
     raise ValueError("Invalid agent type selected.")
 
 def generate_comments_and_documentation(agent, code):
-    """
-    Generate comments and documentation using the AI agent.
-    
+    """Generate comments and documentation using the AI agent.
+
     :param agent: Initialized AI agent.
     :param code: Code to generate comments and documentation for.
     :return: Tuple containing generated comments and documentation.
@@ -85,9 +83,8 @@ def generate_comments_and_documentation(agent, code):
     return comments, documentation
 
 def save_documentation(output_dir, file_name, comments, documentation):
-    """
-    Save the generated documentation in Markdown format.
-    
+    """Save the generated documentation in Markdown format.
+
     :param output_dir: Directory to save the documentation.
     :param file_name: Name of the file to save.
     :param comments: Generated comments.
@@ -100,8 +97,7 @@ def save_documentation(output_dir, file_name, comments, documentation):
         md_file.write(f"## Documentation\n{documentation}\n")
 
 def generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files, custom_output_dir=None):
-    """
-    Generate documentation for the provided repository or uploaded files.
+    """Generate documentation for the provided repository or uploaded files.
 
     :param repo_url: URL of the Git repository.
     :param local_path: Local path to clone the repository.
@@ -141,8 +137,7 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
     return documentation_content
 
 def build_mkdocs(output_dir):
-    """
-    Build the MkDocs site in the background.
+    """Build the MkDocs site in the background.
 
     :param output_dir: Directory to build the MkDocs site.
     """
@@ -152,8 +147,7 @@ def build_mkdocs(output_dir):
         pass
 
 def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=None):
-    """
-    Interface for generating documentation using Gradio.
+    """Interface for generating documentation using Gradio.
 
     :param repo_url: URL of the Git repository.
     :param agent_type: Type of AI agent to use.
