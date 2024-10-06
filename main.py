@@ -80,8 +80,7 @@ def generate_documentation(repo_url, paths, agent_type, uploaded_files, custom_o
     :param uploaded_files: The files uploaded for documentation generation.
     :param custom_output_dir: Optional custom output directory for saving documentation.
     """
-    # Existing code for generating documentation
-    pass
+    # TODO: Implement documentation generation logic
 
 def build_mkdocs(output_dir):
     """
@@ -89,5 +88,4 @@ def build_mkdocs(output_dir):
 
     :param output_dir: The directory to build the MkDocs documentation in.
     """
-    # Existing code for building mkdocs
-    pass
+    # TODO: Implement MkDocs build logic
