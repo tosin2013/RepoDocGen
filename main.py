@@ -17,7 +17,7 @@ from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
 from utils.git_utils import clone_repository, list_files_in_repository, read_file_contents
 
-import config  # Import the global config instance directly from config.py
+from config import config  # Import the global config instance directly from config.py
 
 # Configure logging
 def setup_logging(log_level):
@@ -96,7 +96,7 @@ def save_documentation(output_dir, file_name, comments, documentation):
         md_file.write(f"## Comments\n{comments}\n\n")
         md_file.write(f"## Documentation\n{documentation}\n")
 
-def generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files, custom_output_dir=None):
+def generate_documentation(repo_url, paths, agent_type, uploaded_files, custom_output_dir=None):
     """Generate documentation for the provided repository or uploaded files.
 
     :param repo_url: URL of the Git repository.
@@ -107,13 +107,13 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
     :param custom_output_dir: Custom output directory (optional).
     :return: Generated documentation content.
     """
-    output_dir = custom_output_dir if custom_output_dir else output_dir
+    output_dir = custom_output_dir if custom_output_dir else paths['output_dir']
     logging.info("Generating documentation for repo_url: %s, local_path: %s, output_dir: %s, agent_type: %s",
-                 repo_url, local_path, output_dir, agent_type)
+                 repo_url, paths['local_path'], output_dir, agent_type)
     
     if repo_url:
-        clone_repository(repo_url, local_path)
-        files = list_files_in_repository(local_path)
+        clone_repository(repo_url, paths['local_path'])
+        files = list_files_in_repository(paths['local_path'])
     else:
         files = uploaded_files
     
@@ -170,7 +170,6 @@ def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=Non
     
     build_mkdocs(output_dir)
     
-    global iface
     iface = gr.Interface(
         fn=gradio_interface,
         inputs=[
@@ -183,7 +182,7 @@ def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=Non
         title="Documentation Generator",
         description="Generate documentation for your code using AI agents."
     )
-    iface.reload()
+    iface.update()
     
     return documentation_content
 
