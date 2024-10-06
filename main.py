@@ -46,6 +46,51 @@ def is_valid_code_file(file):
     valid_extensions = ['.py', '.js', '.java', '.cpp', '.c', '.h', '.hpp', '.html', '.css', '.md']
     return file.name.endswith(tuple(valid_extensions))
 
+def initialize_agent(agent_type):
+    """
+    Initialize the AI agent based on the user input.
+    
+    :param agent_type: Type of AI agent to initialize.
+    :return: Initialized AI agent.
+    """
+    if agent_type == "huggingface":
+        return HuggingFaceAgent(api_key=config.HUGGINGFACE_API_KEY)
+    elif agent_type == "mistral":
+        return MistralAgent(api_key=config.MISTRAL_API_KEY)
+    elif agent_type == "ollama":
+        return OllamaAgent(api_key=config.OLLAMA_API_KEY)
+    elif agent_type == "openai":
+        return OpenAIAgent(api_key=config.OPENAI_API_KEY)
+    else:
+        raise ValueError("Invalid agent type selected.")
+
+def generate_comments_and_documentation(agent, code):
+    """
+    Generate comments and documentation using the AI agent.
+    
+    :param agent: Initialized AI agent.
+    :param code: Code to generate comments and documentation for.
+    :return: Tuple containing generated comments and documentation.
+    """
+    comments = agent.generate_comment(code)
+    documentation = agent.generate_documentation(code)
+    return comments, documentation
+
+def save_documentation(output_dir, file_name, comments, documentation):
+    """
+    Save the generated documentation in Markdown format.
+    
+    :param output_dir: Directory to save the documentation.
+    :param file_name: Name of the file to save.
+    :param comments: Generated comments.
+    :param documentation: Generated documentation.
+    """
+    output_file = os.path.join(output_dir, f"{file_name}.md")
+    with open(output_file, 'w') as md_file:
+        md_file.write(f"# {file_name}\n\n")
+        md_file.write(f"## Comments\n{comments}\n\n")
+        md_file.write(f"## Documentation\n{documentation}\n")
+
 def generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files, custom_output_dir=None):
     # Use custom_output_dir if provided, otherwise use the default output_dir from config
     output_dir = custom_output_dir if custom_output_dir else output_dir
@@ -59,16 +104,7 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
         files = uploaded_files
     
     # Initialize AI agent based on user input
-    if agent_type == "huggingface":
-        agent = HuggingFaceAgent(api_key=config.HUGGINGFACE_API_KEY)
-    elif agent_type == "mistral":
-        agent = MistralAgent(api_key=config.MISTRAL_API_KEY)
-    elif agent_type == "ollama":
-        agent = OllamaAgent(api_key=config.OLLAMA_API_KEY)
-    elif agent_type == "openai":
-        agent = OpenAIAgent(api_key=config.OPENAI_API_KEY)
-    else:
-        raise ValueError("Invalid agent type selected.")
+    agent = initialize_agent(agent_type)
     
     # Iterate over each file
     documentation_content = ""
@@ -80,18 +116,13 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
             code = file.read().decode('utf-8')
         
         # Generate comments and documentation
-        comments = agent.generate_comment(code)
-        documentation = agent.generate_documentation(code)
+        comments, documentation = generate_comments_and_documentation(agent, code)
         
         # Save the generated documentation in Markdown format
-        output_file = os.path.join(output_dir, f"{os.path.basename(file)}.md")
-        with open(output_file, 'w') as md_file:
-            md_file.write(f"# {file}\n\n")
-            md_file.write(f"## Comments\n{comments}\n\n")
-            md_file.write(f"## Documentation\n{documentation}\n")
+        save_documentation(output_dir, os.path.basename(file), comments, documentation)
         
         # Append the generated documentation to the content
-        with open(output_file, 'r') as md_file:
+        with open(os.path.join(output_dir, f"{os.path.basename(file)}.md"), 'r') as md_file:
             documentation_content += md_file.read() + "\n\n"
     
     return documentation_content
