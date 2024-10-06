@@ -1,8 +1,16 @@
 from litellm import completion
+import logging
 
 class HuggingFaceAgent:
     def __init__(self, api_key):
         self.api_key = api_key
+        self.validate_api_key()
+
+    def validate_api_key(self):
+        if not self.api_key:
+            logging.error("Hugging Face API key is missing.")
+            raise ValueError("Hugging Face API key is missing.")
+        logging.info("Hugging Face API key is valid.")
 
     def generate_comment(self, code):
         response = completion(
