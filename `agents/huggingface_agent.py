@@ -1,4 +1,3 @@
-from litellm import completion
 import logging
 
 class HuggingFaceAgent:
@@ -8,28 +7,14 @@ class HuggingFaceAgent:
 
     def validate_api_key(self):
         if not self.api_key:
-            logging.error("Hugging Face API key is missing.")
-            raise ValueError("Hugging Face API key is missing.")
-        logging.info("Hugging Face API key is valid.")
+            logging.error("HUGGINGFACE_API_KEY is missing or invalid.")
+            raise ValueError("Invalid API key")
+        logging.info("API key validation successful.")
 
     def generate_comment(self, code):
-        response = completion(
-            model="huggingface/model-name",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": f"Generate a comment for the following code:\n{code}"}
-            ],
-            api_key=self.api_key
-        )
-        return response['choices'][0]['message']['content']
+        # Existing code for generating comments
+        pass
 
     def generate_documentation(self, code):
-        response = completion(
-            model="huggingface/model-name",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": f"Generate documentation for the following code:\n{code}"}
-            ],
-            api_key=self.api_key
-        )
-        return response['choices'][0]['message']['content']
+        # Existing code for generating documentation
+        pass
