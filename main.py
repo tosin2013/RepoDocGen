@@ -108,7 +108,7 @@ def generate_documentation(repo_url, local_path, output_dir, agent_type, uploade
     :return: Generated documentation content.
     """
     output_dir = custom_output_dir if custom_output_dir else output_dir
-    logging.info("Generating documentation for repo_url: %s, local_path: %s, output_dir: %s, agent_type: %s", 
+    logging.info("Generating documentation for repo_url: %s, local_path: %s, output_dir: %s, agent_type: %s",
                  repo_url, local_path, output_dir, agent_type)
     
     if repo_url:
@@ -143,7 +143,7 @@ def build_mkdocs(output_dir):
     """
     logging.info("Building MkDocs site in directory: %s", output_dir)
     with subprocess.Popen(["mkdocs", "build", "--site-dir", output_dir, "--watch"], 
-                          stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE):
         pass
 
 def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=None):
@@ -171,8 +171,19 @@ def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=Non
     build_mkdocs(output_dir)
     
     global iface
-    if iface is not None:
-        iface.reload()
+    iface = gr.Interface(
+        fn=gradio_interface,
+        inputs=[
+            gr.Textbox(label="Git Repository URL"),
+            gr.Dropdown(choices=["huggingface", "mistral", "ollama", "openai"], label="Select AI Agent"),
+            gr.File(file_count="multiple", label="Upload Code Files"),
+            gr.Textbox(label="Custom Output Directory (optional)")
+        ],
+        outputs=gr.Markdown(label="Generated Documentation"),
+        title="Documentation Generator",
+        description="Generate documentation for your code using AI agents."
+    )
+    iface.reload()
     
     return documentation_content
 
