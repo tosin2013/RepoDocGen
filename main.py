@@ -40,3 +40,9 @@ def build_mkdocs():
     Build the MkDocs documentation in the specified output directory.
     """
     # Existing code for building mkdocs
+
+if __name__ == "__main__":
+    setup_logging(logging.INFO)
+    initialize_agent("huggingface")
+    generate_documentation()
+    build_mkdocs()
