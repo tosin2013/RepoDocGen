@@ -17,7 +17,7 @@ from agents.ollama_agent import OllamaAgent
 from agents.openai_agent import OpenAIAgent
 from utils.git_utils import clone_repository, list_files_in_repository, read_file_contents
 
-from config import config  # Import the global config instance directly from config.py
+from config.config import config  # Import the global config instance directly from config.py
 
 # Configure logging
 def setup_logging(log_level):
