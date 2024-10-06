@@ -34,6 +34,22 @@ def setup_logging(log_level):
         ]
     )
 
+def print_usage_instructions():
+    """Print instructions on how to use the .env file."""
+    print("""
+Usage Instructions:
+1. Create a .env file in the root directory of the project.
+2. Add your API keys to the .env file in the following format:
+
+HUGGINGFACE_API_KEY=your_valid_huggingface_api_key
+MISTRAL_API_KEY=your_mistral_api_key
+OLLAMA_API_KEY=your_ollama_api_key
+OPENAI_API_KEY=your_openai_api_key
+
+3. Ensure that the API keys are valid and not set to the default values.
+4. Run the script using `python main.py`.
+""")
+
 def is_valid_repo_url(repo_url):
     """Check if the provided repository URL is valid.
 
