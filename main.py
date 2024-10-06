@@ -100,8 +100,7 @@ def generate_documentation(repo_url, paths, agent_type, uploaded_files, custom_o
     """Generate documentation for the provided repository or uploaded files.
 
     :param repo_url: URL of the Git repository.
-    :param local_path: Local path to clone the repository.
-    :param output_dir: Directory to save the generated documentation.
+    :param paths: Dictionary containing local_path and output_dir.
     :param agent_type: Type of AI agent to use.
     :param uploaded_files: List of uploaded files.
     :param custom_output_dir: Custom output directory (optional).
@@ -122,7 +121,7 @@ def generate_documentation(repo_url, paths, agent_type, uploaded_files, custom_o
     documentation_content = ""
     for file in files:
         if repo_url:
-            file_path = os.path.join(local_path, file)
+            file_path = os.path.join(paths['local_path'], file)
             code = read_file_contents(file_path)
         else:
             code = file.read().decode('utf-8')
@@ -166,23 +165,9 @@ def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=Non
             if not is_valid_code_file(file):
                 return f"Invalid file: {file.name}. Please upload valid code files."
     
-    documentation_content = generate_documentation(repo_url, local_path, output_dir, agent_type, uploaded_files, custom_output_dir)
+    documentation_content = generate_documentation(repo_url, {'local_path': local_path, 'output_dir': output_dir}, agent_type, uploaded_files, custom_output_dir)
     
     build_mkdocs(output_dir)
-    
-    iface = gr.Interface(
-        fn=gradio_interface,
-        inputs=[
-            gr.Textbox(label="Git Repository URL"),
-            gr.Dropdown(choices=["huggingface", "mistral", "ollama", "openai"], label="Select AI Agent"),
-            gr.File(file_count="multiple", label="Upload Code Files"),
-            gr.Textbox(label="Custom Output Directory (optional)")
-        ],
-        outputs=gr.Markdown(label="Generated Documentation"),
-        title="Documentation Generator",
-        description="Generate documentation for your code using AI agents."
-    )
-    iface.update()
     
     return documentation_content
 
