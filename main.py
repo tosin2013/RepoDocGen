@@ -52,7 +52,9 @@ def is_valid_code_file(file):
     :param file: Uploaded file object.
     :return: True if valid, False otherwise.
     """
-    valid_extensions = ['.py', '.js', '.java', '.cpp', '.c', '.h', '.hpp', '.html', '.css', '.md']
+    valid_extensions = [
+        '.py', '.js', '.java', '.cpp', '.c', '.h', '.hpp', '.html', '.css', '.md'
+    ]
     return file.name.endswith(tuple(valid_extensions))
 
 def initialize_agent(agent_type):
@@ -107,17 +109,19 @@ def generate_documentation(repo_url, paths, agent_type, uploaded_files, custom_o
     :return: Generated documentation content.
     """
     output_dir = custom_output_dir if custom_output_dir else paths['output_dir']
-    logging.info("Generating documentation for repo_url: %s, local_path: %s, output_dir: %s, agent_type: %s",
-                 repo_url, paths['local_path'], output_dir, agent_type)
-    
+    logging.info(
+        "Generating documentation for repo_url: %s, local_path: %s, output_dir: %s, agent_type: %s",
+        repo_url, paths['local_path'], output_dir, agent_type
+    )
+
     if repo_url:
         clone_repository(repo_url, paths['local_path'])
         files = list_files_in_repository(paths['local_path'])
     else:
         files = uploaded_files
-    
+
     agent = initialize_agent(agent_type)
-    
+
     documentation_content = ""
     for file in files:
         if repo_url:
@@ -125,14 +129,14 @@ def generate_documentation(repo_url, paths, agent_type, uploaded_files, custom_o
             code = read_file_contents(file_path)
         else:
             code = file.read().decode('utf-8')
-        
+
         comments, documentation = generate_comments_and_documentation(agent, code)
-        
+
         save_documentation(output_dir, os.path.basename(file), comments, documentation)
-        
+
         with open(os.path.join(output_dir, f"{os.path.basename(file)}.md"), 'r', encoding='utf-8') as md_file:
             documentation_content += md_file.read() + "\n\n"
-    
+
     return documentation_content
 
 def build_mkdocs(output_dir):
@@ -141,8 +145,10 @@ def build_mkdocs(output_dir):
     :param output_dir: Directory to build the MkDocs site.
     """
     logging.info("Building MkDocs site in directory: %s", output_dir)
-    with subprocess.Popen(["mkdocs", "build", "--site-dir", output_dir, "--watch"], 
-                          stdout=subprocess.PIPE, stderr=subprocess.PIPE):
+    with subprocess.Popen(
+        ["mkdocs", "build", "--site-dir", output_dir, "--watch"],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    ):
         pass
 
 def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=None):
@@ -156,30 +162,35 @@ def gradio_interface(repo_url, agent_type, uploaded_files, custom_output_dir=Non
     """
     local_path = config.LOCAL_PATH
     output_dir = config.OUTPUT_DIR
-    
+
     if repo_url and not is_valid_repo_url(repo_url):
         return "Invalid repository URL. Please provide a valid Git repository URL."
-    
+
     if uploaded_files:
         for file in uploaded_files:
             if not is_valid_code_file(file):
                 return f"Invalid file: {file.name}. Please upload valid code files."
-    
-    documentation_content = generate_documentation(repo_url, {'local_path': local_path, 'output_dir': output_dir}, agent_type, uploaded_files, custom_output_dir)
-    
+
+    documentation_content = generate_documentation(
+        repo_url, {'local_path': local_path, 'output_dir': output_dir}, agent_type, uploaded_files, custom_output_dir
+    )
+
     build_mkdocs(output_dir)
-    
+
     return documentation_content
 
 if __name__ == "__main__":
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Documentation Generator")
-    parser.add_argument("--log-level", default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Set the logging level")
+    parser.add_argument(
+        "--log-level", default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        help="Set the logging level"
+    )
     args = parser.parse_args()
-    
+
     # Setup logging
     setup_logging(args.log_level)
-    
+
     # Define Gradio interface
     iface = gr.Interface(
         fn=gradio_interface,
@@ -193,9 +204,9 @@ if __name__ == "__main__":
         title="Documentation Generator",
         description="Generate documentation for your code using AI agents."
     )
-    
+
     # Run MkDocs in the background
     threading.Thread(target=build_mkdocs, args=(config.OUTPUT_DIR,)).start()
-    
+
     # Launch Gradio interface
     iface.launch()
