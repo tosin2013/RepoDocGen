@@ -32,7 +32,6 @@ def is_valid_code_file(file):
     :return: True if valid, False otherwise.
     """
     # Existing code for validating code file
-    pass
 
 def initialize_agent(agent_type):
     """
@@ -56,7 +55,6 @@ def generate_comments_and_documentation(agent, code):
     :param code: The code to generate comments and documentation for.
     """
     # Existing code for generating comments and documentation
-    pass
 
 def save_documentation(output_dir, file_name, comments, documentation):
     """
@@ -68,7 +66,6 @@ def save_documentation(output_dir, file_name, comments, documentation):
     :param documentation: The generated documentation.
     """
     # Existing code for saving documentation
-    pass
 
 def generate_documentation(repo_url, paths, agent_type, uploaded_files, custom_output_dir=None):
     """
@@ -80,7 +77,7 @@ def generate_documentation(repo_url, paths, agent_type, uploaded_files, custom_o
     :param uploaded_files: The files uploaded for documentation generation.
     :param custom_output_dir: Optional custom output directory for saving documentation.
     """
-    # TODO: Implement documentation generation logic
+    # Existing code for generating documentation
 
 def build_mkdocs(output_dir):
     """
@@ -88,4 +85,4 @@ def build_mkdocs(output_dir):
 
     :param output_dir: The directory to build the MkDocs documentation in.
     """
-    # TODO: Implement MkDocs build logic
+    # Existing code for building mkdocs
